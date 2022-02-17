@@ -9,3 +9,5 @@ It is not a framework, it uses gorilla mux server internally.
 ```
 apibuildr init .
 ```
+
+**NOTE** this repository is under development. please feel free to fork and raise pull requests.
