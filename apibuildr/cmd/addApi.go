@@ -25,11 +25,11 @@ var addApiCmd = &cobra.Command{
 		_, err = os.Stat(fmt.Sprintf("%s/main.go", wd))
 		if err != nil {
 
-			CheckError("the current directory doesn't belong to apibuildr environment.")
+			CheckError("the current directory is not apibuildr project.")
 		}
 		_, err = os.Stat(fmt.Sprintf("%s/cmd/server.go", wd))
 		if err != nil {
-			CheckError("the current directory doesn't belong to apibuildr environment.")
+			CheckError("the current directory is not apibuildr project.")
 		}
 		apiName := args[0]
 		_, err = os.Stat(fmt.Sprintf("%s/cmd/%s.go", wd, apiName))
