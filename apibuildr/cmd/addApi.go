@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 // addApiCmd represents the addApi command
@@ -19,8 +20,19 @@ var addApiCmd = &cobra.Command{
 		if err != nil {
 			CheckError(err)
 		}
-		
+		_, err = os.Open("main.go")
+		if err != nil {
+			CheckError("the current directory doesn't belong to apibuildr environment.")
+		}
+		_, err = os.Open("cmd/server.go")
+		if err != nil {
+			CheckError("the current directory doesn't belong to apibuildr environment.")
+		}
 		apiName := args[0]
+		_, err = os.Open("./cmd/" + apiName + ".go")
+		if err == nil {
+			CheckError("the given api name already exists.")
+		}
 		apiMethod, err := cmd.Flags().GetString("method")
 		if err != nil {
 			CheckError(err)
