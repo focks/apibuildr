@@ -8,12 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/focks/apibuildr"
+	"{{ .PackageName }}/internal"
 	"net/http"
 )
-
-type {{ .Name }}ApiResponse struct {
-	Message string 
-}
 
 const {{ .Name }}Api = "{{ .Name }}Api"
 
@@ -25,8 +22,13 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 		defer r.Body.Close()
 		defer fmt.Println("api request ends")
 		fmt.Println("api request starts")
-		
-		res := {{ .Name }}ApiResponse{Message: "ok",}
+		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
+
+		res, foul := internal.{{ .Name }}Ctrl(ctx)
+		if foul != nil {
+			apibuildr.HandleError(ctx, w, foul)
+			return
+		}
 		bites, _ := json.Marshal(res)
 		
 		w.Header().Set("Content-Type", "application/json")
