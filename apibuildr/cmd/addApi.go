@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
+
 	"os"
 )
 
@@ -19,8 +22,20 @@ var addApiCmd = &cobra.Command{
 		if err != nil {
 			CheckError(err)
 		}
-		
+		_, err = os.Stat(fmt.Sprintf("%s/main.go", wd))
+		if err != nil {
+
+			CheckError("the current directory is not apibuildr project.")
+		}
+		_, err = os.Stat(fmt.Sprintf("%s/cmd/server.go", wd))
+		if err != nil {
+			CheckError("the current directory is not apibuildr project.")
+		}
 		apiName := args[0]
+		_, err = os.Stat(fmt.Sprintf("%s/cmd/%s.go", wd, apiName))
+		if err == nil {
+			CheckError("the given api name already exists.")
+		}
 		apiMethod, err := cmd.Flags().GetString("method")
 		if err != nil {
 			CheckError(err)

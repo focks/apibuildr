@@ -37,7 +37,7 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 }
 
 func init() {
-	helloApiHandler.RegisterToRouter(Router)
+	{{.Name}}ApiHandler.RegisterToRouter(Router)
 }
 
 `)
