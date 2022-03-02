@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/focks/apibuildr/apibuildr/cmd/tpl"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/focks/apibuildr/apibuildr/cmd/tpl"
 )
 
 type Api struct {
@@ -169,7 +170,7 @@ func (a *Api) createPostApi() error {
 	}
 	defer ctrlFile.Close()
 
-	ctrlTestsTpl := tpl.GetApiCtrlTestsTemplate()
+	ctrlTestsTpl := tpl.PostApiCtrlTestsTemplate()
 	ctrlTestsTemplate := template.Must(template.New("ctrlTest").Parse(string(ctrlTestsTpl)))
 	err = ctrlTestsTemplate.Execute(ctrlTestFile, a)
 	if err != nil {
