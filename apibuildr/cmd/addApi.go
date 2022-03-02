@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
+
 	"strings"
 
 	"os"
@@ -31,6 +33,9 @@ var addApiCmd = &cobra.Command{
 		apiPath, err := cmd.Flags().GetString("path")
 		if err != nil {
 			CheckError(err)
+		}
+		if apiPath == "" {
+			CheckError("path cannot be empty , enter a path with -p flag")
 		}
 
 		modName := getModImportPath()
