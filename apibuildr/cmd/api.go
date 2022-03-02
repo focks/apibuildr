@@ -12,6 +12,7 @@ type Api struct {
 	Name             string
 	Method           string
 	Path             string
+	PathEnd          string
 	ProjectDirectory string
 	PackageName      string
 }
@@ -96,6 +97,19 @@ func (a *Api) createGetApi() error {
 	ctrlTpl := tpl.GetApiCtrlTemplate()
 	ctrlTemplate := template.Must(template.New("ctrl").Parse(string(ctrlTpl)))
 	err = ctrlTemplate.Execute(ctrlFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add the test file
+	ctrlTestFile, err := os.Create(fmt.Sprintf("%s/internal/%s_test.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer ctrlFile.Close()
+	ctrlTestsTpl := tpl.GetApiCtrlTestsTemplate()
+	ctrlTestsTemplate := template.Must(template.New("ctrlTest").Parse(string(ctrlTestsTpl)))
+	err = ctrlTestsTemplate.Execute(ctrlTestFile, a)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"strings"
 
@@ -33,11 +34,16 @@ var addApiCmd = &cobra.Command{
 		}
 
 		modName := getModImportPath()
+		apiPath = strings.Trim(apiPath, "/")
+		splits := strings.Split(apiPath, "/")
+		pathEnd := splits[len(splits)-1]
+		apiPath = strings.Trim(apiPath, fmt.Sprintf("/%s", pathEnd))
 
 		api := Api{
 			Name:             strings.Title(apiName),
 			Method:           apiMethod,
 			Path:             apiPath,
+			PathEnd:          pathEnd,
 			PackageName:      modName,
 			ProjectDirectory: wd,
 		}
@@ -54,8 +60,4 @@ func init() {
 
 	addApiCmd.Flags().StringP("path", "p", "", "api endpoint path")
 	addApiCmd.Flags().StringP("method", "m", "GET", "http method")
-}
-
-func addApi(apiName, method string) error {
-	return nil
 }

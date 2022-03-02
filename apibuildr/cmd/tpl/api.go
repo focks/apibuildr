@@ -16,7 +16,7 @@ const {{ .Name }}Api = "{{ .Name }}Api"
 
 var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 	Name:   {{ .Name }}Api,
-	Path:   "{{ .Path }}",
+	Path:   "/{{ .Path }}/{ {{ .PathEnd }}:{{ .PathEnd }}(?:\\/)?}",
 	Method: http.MethodGet,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
@@ -58,7 +58,7 @@ const {{ .Name }}Api = "{{ .Name }}Api"
 
 var helloApiHandler = ApiHandler{
 	Name:   HelloApi,
-	Path:   "/v1/{{{ .Path }}:{{ .Path }}(?:\\/)?}",
+	Path:   "/{{ .Path }}/{{{ .PathEnd }}:{{ .PathEnd }}(?:\\/)?}",
 	Method: http.MethodGet,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
