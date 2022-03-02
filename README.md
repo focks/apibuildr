@@ -22,3 +22,7 @@ apibuildr addApi apiName -p /v1/hello -m POST
 
 -p or `--path` represents the api path  <br/>
 -m or `--method` is the api method (by default it is get)
+
+
+### Contributing 
+please feel free to fork this project and raise PRs. Please include feature requests into `todos.txt` file.
