@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/focks/apibuildr/apibuildr/cmd/tpl"
+
 	"os"
 	"strings"
 	"text/template"
@@ -46,6 +48,9 @@ func (a *Api) Create() error {
 		return a.createGetApi()
 	case "POST":
 		return a.createPostApi()
+	case "PUT":
+		return a.createPutApi()
+
 	default:
 		return nil
 
@@ -169,7 +174,82 @@ func (a *Api) createPostApi() error {
 	}
 	defer ctrlFile.Close()
 
-	ctrlTestsTpl := tpl.GetApiCtrlTestsTemplate()
+	ctrlTestsTpl := tpl.PostApiCtrlTestsTemplate()
+	ctrlTestsTemplate := template.Must(template.New("ctrlTest").Parse(string(ctrlTestsTpl)))
+	err = ctrlTestsTemplate.Execute(ctrlTestFile, a)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Api) createPutApi() error {
+	// add api file
+	apiFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer apiFile.Close()
+	apiTpl := tpl.PutApiHandlerTemplate()
+	apiTemplate := template.Must(template.New("api").Parse(string(apiTpl)))
+	err = apiTemplate.Execute(apiFile, a)
+	if err != nil {
+		return err
+	}
+
+	// checking if pkg/api directory exists
+	apiMod := fmt.Sprintf("%s/pkg/api", a.ProjectDirectory)
+	if _, err := os.Stat(apiMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(apiMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	// checking if internal directory exists
+	internalMod := fmt.Sprintf("%s/internal", a.ProjectDirectory)
+	if _, err := os.Stat(internalMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(internalMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	// add ctrl file
+	ctrlFile, err := os.Create(fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer ctrlFile.Close()
+	ctrlTpl := tpl.PutApiCtrlTemplate()
+	ctrlTemplate := template.Must(template.New("ctrl").Parse(string(ctrlTpl)))
+	err = ctrlTemplate.Execute(ctrlFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add request/response file
+	reqResFile, err := os.Create(fmt.Sprintf("%s/pkg/api/%sReqRes.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer reqResFile.Close()
+	// request / response structs
+	reqResTpl := tpl.RequestResponseTemplate()
+	reqResTemplate := template.Must(template.New("reqRes").Parse(string(reqResTpl)))
+	err = reqResTemplate.Execute(reqResFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add the test file
+	ctrlTestFile, err := os.Create(fmt.Sprintf("%s/internal/%s_test.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer ctrlFile.Close()
+
+	ctrlTestsTpl := tpl.PutApiCtrlTestsTemplate()
 	ctrlTestsTemplate := template.Must(template.New("ctrlTest").Parse(string(ctrlTestsTpl)))
 	err = ctrlTestsTemplate.Execute(ctrlTestFile, a)
 	if err != nil {
