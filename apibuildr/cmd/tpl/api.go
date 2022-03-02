@@ -20,8 +20,8 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 	Method: http.MethodGet,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		defer fmt.Println("api request ends")
-		fmt.Println("api request starts")
+		fmt.Println(fmt.Sprintf("%s api request start", {{ .Name }}Api))
+		defer fmt.Println(fmt.Sprintf("%s api request end", {{ .Name }}Api))
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
 
 		res, foul := internal.{{ .Name }}Ctrl(ctx)
@@ -45,35 +45,75 @@ func init() {
 `)
 }
 
-func PostApiTemplate() []byte {
+func RequestResponseTemplate() []byte {
+	return []byte(`
+package api
+
+type {{ .Name }}ApiRequest struct {
+	Name string 
+}
+
+type {{ .Name }}ApiResponse struct {
+	Status string 
+}
+`)
+}
+
+func PostApiHandlerTemplate() []byte {
 	return []byte(`
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/focks/apibuildr"
+	"{{ .PackageName }}/internal"
+	"{{ .PackageName }}/pkg/api"
+	"io/ioutil"
 	"net/http"
 )
 
 const {{ .Name }}Api = "{{ .Name }}Api"
 
-var helloApiHandler = ApiHandler{
-	Name:   HelloApi,
-	Path:   "/{{ .Path }}/{{{ .PathEnd }}:{{ .PathEnd }}(?:\\/)?}",
-	Method: http.MethodGet,
+var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
+	Name:   {{ .Name }}Api,
+	Path:   "/{{ .Path }}/{ {{ .PathEnd }}:{{ .PathEnd }}(?:\\/)?}",
+	Method: http.MethodPost,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		defer fmt.Println("api request ends")
-		fmt.Println("api request starts")
+		fmt.Println(fmt.Sprintf("%s api request start", {{ .Name }}Api))
+		defer fmt.Println(fmt.Sprintf("%s api request end", {{ .Name }}Api))
+		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
+
+		defer r.Body.Close()
+		bodyBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			apibuildr.HandleError(ctx, w, err)
+			return
+		}
+		var request api.{{ .Name }}ApiRequest
+
+		if err = json.Unmarshal(bodyBytes, &request); err != nil {
+			apibuildr.HandleError(ctx, w, err)
+			return
+		}
+
+		res, foul := internal.{{ .Name }}Ctrl(ctx, request)
+		if foul != nil {
+			apibuildr.HandleError(ctx, w, foul)
+			return
+		}
+		bites, _ := json.Marshal(res)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte())
+		_, _ = w.Write(bites)
 
 	},
 }
 
 func init() {
-	helloApiHandler.RegisterToRouter(Router)
+	{{ .Name }}ApiHandler.RegisterToRouter(Router)
 }
 
 `)

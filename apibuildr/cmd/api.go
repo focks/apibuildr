@@ -45,30 +45,16 @@ func (a *Api) Create() error {
 	case "GET":
 		return a.createGetApi()
 	case "POST":
+		return a.createPostApi()
+	default:
+		return nil
 
 	}
-
-	// checking if internal directory exists
-
-	// add ctrl file
-	ctrlFile, err := os.Create(fmt.Sprintf("%s/internal/%s.go", a.ProjectDirectory, a.Name))
-	if err != nil {
-		return err
-	}
-	defer ctrlFile.Close()
-	ctrlTpl := tpl.GetApiCtrlTemplate()
-	ctrlTemplate := template.Must(template.New("ctrl").Parse(string(ctrlTpl)))
-	err = ctrlTemplate.Execute(ctrlFile, a)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (a *Api) createGetApi() error {
 	// add api file
-	apiFile, err := os.Create(fmt.Sprintf("%s/cmd/%s.go", a.ProjectDirectory, a.Name))
+	apiFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name))
 	if err != nil {
 		return err
 	}
@@ -89,7 +75,7 @@ func (a *Api) createGetApi() error {
 		}
 	}
 	// add ctrl file
-	ctrlFile, err := os.Create(fmt.Sprintf("%s/internal/%s.go", a.ProjectDirectory, a.Name))
+	ctrlFile, err := os.Create(fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name))
 	if err != nil {
 		return err
 	}
@@ -114,5 +100,80 @@ func (a *Api) createGetApi() error {
 		return err
 	}
 
+	return nil
+}
+
+func (a *Api) createPostApi() error {
+	// add api file
+	apiFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer apiFile.Close()
+	apiTpl := tpl.PostApiHandlerTemplate()
+	apiTemplate := template.Must(template.New("api").Parse(string(apiTpl)))
+	err = apiTemplate.Execute(apiFile, a)
+	if err != nil {
+		return err
+	}
+
+	// checking if pkg/api directory exists
+	apiMod := fmt.Sprintf("%s/pkg/api", a.ProjectDirectory)
+	if _, err := os.Stat(apiMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(apiMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	// checking if internal directory exists
+	internalMod := fmt.Sprintf("%s/internal", a.ProjectDirectory)
+	if _, err := os.Stat(internalMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(internalMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	// add ctrl file
+	ctrlFile, err := os.Create(fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer ctrlFile.Close()
+	ctrlTpl := tpl.PostApiCtrlTemplate()
+	ctrlTemplate := template.Must(template.New("ctrl").Parse(string(ctrlTpl)))
+	err = ctrlTemplate.Execute(ctrlFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add request/response file
+	reqResFile, err := os.Create(fmt.Sprintf("%s/pkg/api/%sReqRes.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer reqResFile.Close()
+	// request / response structs
+	reqResTpl := tpl.RequestResponseTemplate()
+	reqResTemplate := template.Must(template.New("reqRes").Parse(string(reqResTpl)))
+	err = reqResTemplate.Execute(reqResFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add the test file
+	ctrlTestFile, err := os.Create(fmt.Sprintf("%s/internal/%s_test.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer ctrlFile.Close()
+
+	ctrlTestsTpl := tpl.GetApiCtrlTestsTemplate()
+	ctrlTestsTemplate := template.Must(template.New("ctrlTest").Parse(string(ctrlTestsTpl)))
+	err = ctrlTestsTemplate.Execute(ctrlTestFile, a)
+	if err != nil {
+		return err
+	}
 	return nil
 }
