@@ -3,6 +3,7 @@ package apibuildr
 import (
 	"context"
 	"github.com/pborman/uuid"
+	"go.uber.org/zap"
 )
 
 type ContextKey int
@@ -70,6 +71,24 @@ func GetUserID(ctx context.Context) string {
 		return ""
 	}
 	return userId
+}
+
+func Contextual(ctx context.Context, errs ...error) []zap.Field {
+	fields := []zap.Field{}
+
+	if requestId := GetRequestID(ctx); requestId != "" {
+		fields = append(fields, zap.String("request_id", requestId))
+	}
+
+	if api := GetApiName(ctx); api != "" {
+		fields = append(fields, zap.String("api_name", api))
+	}
+
+	if len(errs) > 0 {
+		fields = append(fields, zap.Error(errs[0]))
+	}
+
+	return fields
 }
 
 func ApiRequestCtx(c context.Context, api string) context.Context {

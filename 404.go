@@ -12,18 +12,18 @@ import (
 func FourZeroFour() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.RequestURI
-		responseId := uuid.NewUUID().String()
+		requestId := uuid.NewUUID().String()
 		headers := make([]string, 0)
 		for k, v := range r.Header {
 			header := fmt.Sprintf("%s:%s", k, strings.Join(v, ","))
 			headers = append(headers, header)
 		}
 		nf := ErrorResponse{
-			Message:    fmt.Sprintf("requested path %s not present", path),
-			Code:       "not found",
-			Api:        r.RequestURI,
-			ResponseId: responseId,
-			Headers:    headers,
+			Message:   fmt.Sprintf("requested path %s not present", path),
+			Code:      "not found",
+			Api:       r.RequestURI,
+			RequestId: requestId,
+			Headers:   headers,
 		}
 
 		response, _ := json.Marshal(&nf)

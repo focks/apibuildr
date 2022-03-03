@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/focks/apibuildr"
+	"go.uber.org/zap"
 	"{{ .PackageName }}/internal"
 	"net/http"
 )
@@ -20,9 +21,10 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 	Method: http.MethodGet,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		fmt.Println(fmt.Sprintf("%s api request start", {{ .Name }}Api))
-		defer fmt.Println(fmt.Sprintf("%s api request end", {{ .Name }}Api))
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
+
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api))
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api))
 
 		res, foul := internal.{{ .Name }}Ctrl(ctx)
 		if foul != nil {

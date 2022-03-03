@@ -43,6 +43,15 @@ func (a *Api) Create() error {
 		}
 	}
 
+	if _, err := os.Stat(fmt.Sprintf("%s/internal/init.go", a.ProjectDirectory)); os.IsNotExist(err) {
+		if err := createInitFile(InitFileVars{
+			Package: "internal",
+			Path:    fmt.Sprintf("%s/internal", a.ProjectDirectory),
+		}); err != nil {
+			return err
+		}
+	}
+
 	switch strings.ToUpper(a.Method) {
 	case "GET":
 		return a.createGetApi()

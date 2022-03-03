@@ -15,6 +15,11 @@ type Project struct {
 	PackageName  string
 }
 
+type InitFileVars struct {
+	Package string
+	Path    string
+}
+
 func (p *Project) Create() error {
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
@@ -40,6 +45,14 @@ func (p *Project) Create() error {
 	if _, err = os.Stat(fmt.Sprintf("%s/cmd", p.AbsolutePath)); os.IsNotExist(err) {
 		CheckError(os.Mkdir(fmt.Sprintf("%s/cmd", p.AbsolutePath), 0751))
 	}
+
+	pkg := fmt.Sprintf("%s/pkg", p.AbsolutePath)
+	if _, err := os.Stat(pkg); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(pkg, 0754); err != nil {
+			return err
+		}
+	}
 	rootFile, err := os.Create(fmt.Sprintf("%s/cmd/server.go", p.AbsolutePath))
 	if err != nil {
 		return err
@@ -48,6 +61,27 @@ func (p *Project) Create() error {
 
 	rootTemplate := template.Must(template.New("root").Parse(string(tpl.ServerTemplate())))
 	err = rootTemplate.Execute(rootFile, p)
+	if err != nil {
+		return err
+	}
+
+	return createInitFile(InitFileVars{
+		Path:    fmt.Sprintf("%s/cmd", p.AbsolutePath),
+		Package: "cmd",
+	})
+
+}
+
+func createInitFile(vars InitFileVars) error {
+	// create init.go
+	initFile, err := os.Create(fmt.Sprintf("%s/init.go", vars.Path))
+	if err != nil {
+		return err
+	}
+	defer initFile.Close()
+
+	initTemplate := template.Must(template.New("init").Parse(string(tpl.InitFileTemplate())))
+	err = initTemplate.Execute(initFile, vars)
 	if err != nil {
 		return err
 	}
