@@ -34,15 +34,16 @@ var addApiCmd = &cobra.Command{
 		if err != nil {
 			CheckError(err)
 		}
-		if apiPath == "" {
-			CheckError("path cannot be empty , enter a path with -p flag")
-		}
 
 		modName := getModImportPath()
 		apiPath = strings.Trim(apiPath, "/")
 		splits := strings.Split(apiPath, "/")
 		pathEnd := splits[len(splits)-1]
 		apiPath = strings.Trim(apiPath, fmt.Sprintf("/%s", pathEnd))
+
+		if len(apiPath) == 0 && len(pathEnd) == 0 {
+			CheckError("empty path not allowed, enter a valid path")
+		}
 
 		api := Api{
 			Name:             strings.Title(apiName),
