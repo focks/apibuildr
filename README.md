@@ -2,7 +2,16 @@
 
 apibuildr is a commandline tool for creating rest apis in golang language. 
 
+`apibuildr` makes it easy to generate boilerplate code while adding rest apis.
+
+
 It is not a framework, it uses gorilla mux server internally. 
+
+### Installing apibuildr
+
+```
+go get github.com/focks/apibuildr
+```
 
 ### Initializing a project
 
