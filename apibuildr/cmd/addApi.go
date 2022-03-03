@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
+
 	"strings"
 
 	"os"
@@ -38,6 +40,10 @@ var addApiCmd = &cobra.Command{
 		splits := strings.Split(apiPath, "/")
 		pathEnd := splits[len(splits)-1]
 		apiPath = strings.Trim(apiPath, fmt.Sprintf("/%s", pathEnd))
+
+		if len(apiPath) == 0 && len(pathEnd) == 0 {
+			CheckError("empty path not allowed, enter a valid path")
+		}
 
 		api := Api{
 			Name:             strings.Title(apiName),
