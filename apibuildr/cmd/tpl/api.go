@@ -22,9 +22,9 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
-
-		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api))
-		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api))
+		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
 
 		res, foul := internal.{{ .Name }}Ctrl(ctx)
 		if foul != nil {
@@ -83,9 +83,10 @@ var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
 	Method: http.MethodPost,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		fmt.Println(fmt.Sprintf("%s api request start", {{ .Name }}Api))
-		defer fmt.Println(fmt.Sprintf("%s api request end", {{ .Name }}Api))
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
+		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
 
 		defer r.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(r.Body)
@@ -143,11 +144,12 @@ var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
 	Method: http.MethodPut,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		fmt.Println(fmt.Sprintf("%s api request start", {{ .Name }}Api))
-		defer fmt.Println(fmt.Sprintf("%s api request end", {{ .Name }}Api))
+		
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
+		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
 
-		defer r.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			apibuildr.HandleError(ctx, w, err)

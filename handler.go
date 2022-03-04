@@ -2,6 +2,7 @@ package apibuildr
 
 import (
 	"github.com/gorilla/mux"
+	_ "go.uber.org/zap"
 	"net/http"
 )
 
