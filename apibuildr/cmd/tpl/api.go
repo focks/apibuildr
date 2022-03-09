@@ -147,8 +147,8 @@ var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
 		
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
 		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
-		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
-		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
 
 		bodyBytes, err := ioutil.ReadAll(r.Body)
 		if err != nil {
