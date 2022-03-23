@@ -23,8 +23,8 @@ var {{.Name}}ApiHandler = apibuildr.ApiHandler{
 		defer r.Body.Close()
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
 		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
-		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
-		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
 
 		res, foul := internal.{{ .Name }}Ctrl(ctx)
 		if foul != nil {
@@ -85,8 +85,8 @@ var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
 		defer r.Body.Close()
 		ctx := apibuildr.ApiRequestCtx(r.Context(), {{ .Name }}Api)
 		w.Header().Set("request-id", apibuildr.GetRequestID(ctx))
-		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx))
-		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx))
+		logger.Info(fmt.Sprintf("%s api request start", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
+		defer logger.Info(fmt.Sprintf("%s api request end", {{ .Name }}Api), apibuildr.Contextual(ctx)...)
 
 		defer r.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(r.Body)

@@ -22,6 +22,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 )

@@ -13,7 +13,7 @@ type ApiFoul struct {
 	DomainCode string `json:"domain_codes"`
 }
 
-func New(msg string) *ApiFoul {
+func NewFoul(msg string) *ApiFoul {
 	return &ApiFoul{
 		Message: msg,
 	}
