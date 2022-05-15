@@ -144,6 +144,19 @@ func (a *Api) createPostApi() error {
 		return err
 	}
 
+	// add handler test file
+	handlerTestFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer handlerTestFile.Close()
+	handlerTestTpl := tpl.PostApiHandlerTestTemplate()
+	handlerTestTemplate := template.Must(template.New("handlertest").Parse(string(handlerTestTpl)))
+	err = handlerTestTemplate.Execute(handlerTestFile, a)
+	if err != nil {
+		return err
+	}
+
 	// checking if pkg/api directory exists
 	apiMod := fmt.Sprintf("%s/pkg/api", a.ProjectDirectory)
 	if _, err := os.Stat(apiMod); os.IsNotExist(err) {
