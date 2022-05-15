@@ -60,7 +60,7 @@ func Test{{ .Name }}Handler(t *testing.T) {
 
 	// setup 
 	loggr := getTestingLogger()
-	Initialize(loggr)
+	setLogger(loggr)
 
 	t.Run("test case", func(t *testing.T) {
 

@@ -44,7 +44,7 @@ func Exec() {
 
 	go server.run()
 
-	fmt.Println(fmt.Sprintf("Started server on port %s", port))
+	fmt.Printf("Started server on port %s", port)
 
 	c := make(chan os.Signal, 1)
 

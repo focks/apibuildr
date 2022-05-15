@@ -19,8 +19,17 @@ import "go.uber.org/zap"
 
 var logger *zap.Logger
 
-func Initialize(lg *zap.Logger) {
-	logger = lg 
+func setLogger(lg *zap.Logger) {
+	logger = lg
 }
+
+func init() {
+	l, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+	setLogger(l)
+}
+
 `)
 }
