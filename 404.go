@@ -3,16 +3,17 @@ package apibuildr
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pborman/uuid"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func FourZeroFour() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.RequestURI
-		requestId := uuid.NewUUID().String()
+		requestId := uuid.NewString()
 		headers := make([]string, 0)
 		for k, v := range r.Header {
 			header := fmt.Sprintf("%s:%s", k, strings.Join(v, ","))

@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/focks/apibuildr/apibuildr/cmd/tpl"
 	"os"
+
+	"github.com/focks/apibuildr/apibuildr/cmd/tpl"
 
 	"text/template"
 )
@@ -61,6 +62,18 @@ func (p *Project) Create() error {
 
 	rootTemplate := template.Must(template.New("root").Parse(string(tpl.ServerTemplate())))
 	err = rootTemplate.Execute(rootFile, p)
+	if err != nil {
+		return err
+	}
+
+	// test utils file
+	testUtilsFile, err := os.Create(fmt.Sprintf("%s/cmd/testUtils.go", p.AbsolutePath))
+	if err != nil {
+		return err
+	}
+	defer testUtilsFile.Close()
+	testUtilsTemplate := template.Must(template.New("testutils").Parse(string(tpl.GetTestUtilTemplate())))
+	err = testUtilsTemplate.Execute(testUtilsFile, p)
 	if err != nil {
 		return err
 	}

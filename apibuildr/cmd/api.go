@@ -68,14 +68,27 @@ func (a *Api) Create() error {
 
 func (a *Api) createGetApi() error {
 	// add api file
-	apiFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name))
+	handlerFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name))
 	if err != nil {
 		return err
 	}
-	defer apiFile.Close()
-	apiTpl := tpl.GetApiTemplate()
-	apiTemplate := template.Must(template.New("api").Parse(string(apiTpl)))
-	err = apiTemplate.Execute(apiFile, a)
+	defer handlerFile.Close()
+	handlerTpl := tpl.GetApiHandlerTemplate()
+	apiTemplate := template.Must(template.New("api").Parse(string(handlerTpl)))
+	err = apiTemplate.Execute(handlerFile, a)
+	if err != nil {
+		return err
+	}
+
+	// add handler test file
+	handlerTestFile, err := os.Create(fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name))
+	if err != nil {
+		return err
+	}
+	defer handlerTestFile.Close()
+	handlerTestTpl := tpl.GetApiHandlerTestTemplate()
+	handlerTestTemplate := template.Must(template.New("handlerTest").Parse(string(handlerTestTpl)))
+	err = handlerTestTemplate.Execute(handlerTestFile, a)
 	if err != nil {
 		return err
 	}

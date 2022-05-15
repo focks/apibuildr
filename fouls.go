@@ -1,22 +1,29 @@
 package apibuildr
 
-type Foul interface {
-	Error() string
-}
-
 type ApiFoul struct {
 	ApiName    string `json:"api_name"`
 	Message    string `json:"message"`
-	Cause      Foul   `json:"-"`
+	Cause      error  `json:"-"`
 	RequestId  string `json:"request_id"`
 	StatusCode int    `json:"status_code"`
 	DomainCode string `json:"domain_codes"`
 }
 
+// Deprecated
 func NewFoul(msg string) *ApiFoul {
 	return &ApiFoul{
 		Message: msg,
 	}
+}
+
+func New(msg string) *ApiFoul {
+	return &ApiFoul{
+		Message: msg,
+	}
+}
+
+func (e *ApiFoul) UnWrap() error {
+	return e.Cause
 }
 
 func (f ApiFoul) Error() string {
