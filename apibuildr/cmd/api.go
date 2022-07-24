@@ -78,15 +78,15 @@ func (a *Api) createGetApi() error {
 	files := []*ApiFile{
 		{
 			path:     fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name),
-			template: tpl.GetApiHandlerTemplate(),
+			template: tpl.GetApiHandlerTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
-			template: tpl.GetApiHandlerTestTemplate(),
+			template: tpl.GetApiHandlerTestTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name),
-			template: tpl.GetApiCtrlTemplate(),
+			template: tpl.GetApiCtrlTemplate,
 		},
 	}
 
@@ -103,19 +103,19 @@ func (a *Api) createPostApi() error {
 	files := []*ApiFile{
 		{
 			path:     fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name),
-			template: tpl.PostApiHandlerTemplate(),
+			template: tpl.PostApiHandlerTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
-			template: tpl.PostApiHandlerTestTemplate(),
+			template: tpl.PostApiHandlerTestTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name),
-			template: tpl.PostApiCtrlTemplate(),
+			template: tpl.PostApiCtrlTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/pkg/api/%sReqRes.go", a.ProjectDirectory, a.Name),
-			template: tpl.RequestResponseTemplate(),
+			template: tpl.RequestResponseTemplate,
 		},
 	}
 
@@ -132,7 +132,7 @@ func (a *Api) createPutApi() error {
 	files := []*ApiFile{
 		{
 			path:     fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name),
-			template: tpl.PutApiHandlerTemplate(),
+			template: tpl.PutApiHandlerTemplate,
 		},
 		// {
 		// 	path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
@@ -140,11 +140,11 @@ func (a *Api) createPutApi() error {
 		// },
 		{
 			path:     fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name),
-			template: tpl.PutApiCtrlTemplate(),
+			template: tpl.PutApiCtrlTemplate,
 		},
 		{
 			path:     fmt.Sprintf("%s/pkg/api/%sReqRes.go", a.ProjectDirectory, a.Name),
-			template: tpl.RequestResponseTemplate(),
+			template: tpl.RequestResponseTemplate,
 		},
 	}
 

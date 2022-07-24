@@ -2,7 +2,7 @@ package cmd
 
 type ApiFile struct {
 	path     string
-	template []byte
+	template string
 	err      error
 	created  bool
 }
