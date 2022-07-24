@@ -1,6 +1,6 @@
 package tpl
 
-var PostApiHandlerTestTemplate = `package cmd
+var PutApiHandlerTestTemplate = `package cmd
 import (
 	"bytes"
 	"net/http"
@@ -11,14 +11,14 @@ import (
 )
 
 
-func Test{{ .Name }}ApiHandler Errors(t *testing.T) {
+func Test{{ .Name }}ApiHandler(t *testing.T) {
 	loggr := getTestingLogger()
 
 	setLogger(loggr)
 
 	t.Run("test case", func(t *testing.T) {
 		body := bytes.NewReader([]byte("{}"))
-		req, err := http.NewRequest(http.MethodPost, "/{{ .Path }}/{{ .PathEnd }}", body)
+		req, err := http.NewRequest(http.MethodPut, "/{{ .Path }}/{{ .PathEnd }}", body)
 		if err != nil {
 			t.Fatal(err)
 		}

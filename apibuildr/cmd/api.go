@@ -134,10 +134,10 @@ func (a *Api) createPutApi() error {
 			path:     fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name),
 			template: tpl.PutApiHandlerTemplate,
 		},
-		// {
-		// 	path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
-		// 	template: tpl.PutApiN(),
-		// },
+		{
+			path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
+			template: tpl.PutApiHandlerTestTemplate,
+		},
 		{
 			path:     fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name),
 			template: tpl.PutApiCtrlTemplate,
