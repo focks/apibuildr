@@ -19,7 +19,7 @@ func Test{{ .Name }}Handler(t *testing.T) {
 
 	t.Run("test case", func(t *testing.T) {
 
-		req, err := http.NewRequest(http.MethodGet, "/{{.Path }}/{{.PathEnd}}", nil)
+		req, err := http.NewRequest(http.MethodGet, "{{ .Uri }}", nil)
 		if err != nil {
 			t.Fatal(err)
 		}

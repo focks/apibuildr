@@ -7,50 +7,11 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
-	"text/template"
 
 	"github.com/spf13/cobra"
 )
-
-func (a *Api) realizeApiDirectories() error {
-	apiMod := fmt.Sprintf("%s/pkg/api", a.ProjectDirectory)
-	if _, err := os.Stat(apiMod); os.IsNotExist(err) {
-		// create directory
-		if err := os.Mkdir(apiMod, 0754); err != nil {
-			return err
-		}
-	}
-
-	internalMod := fmt.Sprintf("%s/internal", a.ProjectDirectory)
-	if _, err := os.Stat(internalMod); os.IsNotExist(err) {
-		// create directory
-		if err := os.Mkdir(internalMod, 0754); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (a *Api) makeFiles(files *[]*ApiFile) {
-	for i, f := range *files {
-		file, err := os.Create(f.path)
-		if err != nil {
-			f.created = false
-			f.err = err
-		}
-
-		tpl := template.Must(template.New(fmt.Sprintf("tpl-%v", i)).Parse(string(f.template)))
-		if err = tpl.Execute(file, a); err != nil {
-			f.created = true
-			f.err = err
-		}
-
-		file.Close()
-
-	}
-}
 
 func CheckError(msg interface{}) {
 	if msg != nil {
@@ -104,4 +65,30 @@ func modInfoJSON(args ...string) []byte {
 	out, err := exec.Command("go", cmdArgs...).Output()
 	cobra.CheckErr(err)
 	return out
+}
+
+func makeUriPath(p string) string {
+	// "//{ less:less(?:\\/)?}",
+	path := strings.Trim(p, "/")
+	if path == "" {
+		return "/"
+	}
+	parts := strings.Split(path, "/")
+
+	if len(parts) == 0 {
+		return "/"
+	}
+	var end string
+	var varRegex = regexp.MustCompile(`^{.*}$`)
+	if varRegex.MatchString(parts[len(parts)-1]) {
+		end = parts[len(parts)-1]
+	} else {
+		end = fmt.Sprintf(`{%s:%s(?:\\/)?}`, parts[len(parts)-1], parts[len(parts)-1])
+	}
+
+	if len(parts) == 1 {
+		return end
+	}
+	apiPath := strings.Join(parts[:len(parts)-1], "/")
+	return fmt.Sprintf("/%s/%s", apiPath, end)
 }

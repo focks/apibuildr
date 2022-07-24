@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"text/template"
 
 	"os"
 	"strings"
@@ -13,7 +14,7 @@ type Api struct {
 	Name             string
 	Method           string
 	Path             string
-	PathEnd          string
+	Uri              string
 	ProjectDirectory string
 	PackageName      string
 }
@@ -155,4 +156,55 @@ func (a *Api) createPutApi() error {
 	a.makeFiles(&files)
 
 	return nil
+}
+
+func (a *Api) realizeApiDirectories() error {
+	apiMod := fmt.Sprintf("%s/pkg/api", a.ProjectDirectory)
+	if _, err := os.Stat(apiMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(apiMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	internalMod := fmt.Sprintf("%s/internal", a.ProjectDirectory)
+	if _, err := os.Stat(internalMod); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(internalMod, 0754); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (a *Api) makeFiles(files *[]*ApiFile) {
+	for i, f := range *files {
+		file, err := os.Create(f.path)
+		if err != nil {
+			f.created = false
+			f.err = err
+		}
+
+		tpl := template.Must(template.New(fmt.Sprintf("tpl-%v", i)).Parse(string(f.template)))
+		if err = tpl.Execute(file, a); err != nil {
+			f.created = true
+			f.err = err
+		}
+
+		file.Close()
+
+	}
+}
+
+func (a *Api) String() string {
+
+	return fmt.Sprintf("Name: %s \nMethod: %s \nPath: %s \nUri: %s \nProjectDirectory: %s \nPackageName: %s\n",
+		a.Name,
+		a.Method,
+		a.Path,
+		a.Uri,
+		a.ProjectDirectory,
+		a.PackageName,
+	)
 }

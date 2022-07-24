@@ -18,7 +18,7 @@ func Test{{ .Name }}ApiHandler(t *testing.T) {
 
 	t.Run("test case", func(t *testing.T) {
 		body := bytes.NewReader([]byte("{}"))
-		req, err := http.NewRequest(http.MethodPut, "/{{ .Path }}/{{ .PathEnd }}", body)
+		req, err := http.NewRequest(http.MethodPut, "{{ .Uri }}", body)
 		if err != nil {
 			t.Fatal(err)
 		}
