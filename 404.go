@@ -21,8 +21,8 @@ func FourZeroFour() http.Handler {
 		}
 		nf := ErrorResponse{
 			Message:   fmt.Sprintf("requested path %s not present", path),
-			Code:      "not found",
-			Api:       r.RequestURI,
+			ApiCode:   "not found",
+			ApiPath:   r.RequestURI,
 			RequestId: requestId,
 			Headers:   headers,
 		}
@@ -30,7 +30,7 @@ func FourZeroFour() http.Handler {
 		response, _ := json.Marshal(&nf)
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Content-Length", strconv.Itoa(len(response)))
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write(response)
 	})
 }
