@@ -3,12 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 func CheckError(msg interface{}) {
@@ -62,6 +64,31 @@ func modInfoJSON(args ...string) []byte {
 	cmdArgs := append([]string{"list", "-json"}, args...)
 	out, err := exec.Command("go", cmdArgs...).Output()
 	cobra.CheckErr(err)
-
 	return out
+}
+
+func makeUriPath(p string) string {
+	// "//{ less:less(?:\\/)?}",
+	path := strings.Trim(p, "/")
+	if path == "" {
+		return "/"
+	}
+	parts := strings.Split(path, "/")
+
+	if len(parts) == 0 {
+		return "/"
+	}
+	var end string
+	var varRegex = regexp.MustCompile(`^{.*}$`)
+	if varRegex.MatchString(parts[len(parts)-1]) {
+		end = parts[len(parts)-1]
+	} else {
+		end = fmt.Sprintf(`{%s:%s(?:\\/)?}`, parts[len(parts)-1], parts[len(parts)-1])
+	}
+
+	if len(parts) == 1 {
+		return end
+	}
+	apiPath := strings.Join(parts[:len(parts)-1], "/")
+	return fmt.Sprintf("/%s/%s", apiPath, end)
 }

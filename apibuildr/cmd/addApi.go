@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 
@@ -30,29 +30,23 @@ var addApiCmd = &cobra.Command{
 		if err != nil {
 			CheckError(err)
 		}
-		apiPath, err := cmd.Flags().GetString("path")
+		path, err := cmd.Flags().GetString("path")
 		if err != nil {
 			CheckError(err)
 		}
 
 		modName := getModImportPath()
-		apiPath = strings.Trim(apiPath, "/")
-		splits := strings.Split(apiPath, "/")
-		pathEnd := splits[len(splits)-1]
-		apiPath = strings.Trim(apiPath, fmt.Sprintf("/%s", pathEnd))
-
-		if len(apiPath) == 0 && len(pathEnd) == 0 {
-			CheckError("empty path not allowed, enter a valid path")
-		}
 
 		api := Api{
 			Name:             strings.Title(apiName),
 			Method:           apiMethod,
-			Path:             apiPath,
-			PathEnd:          pathEnd,
+			Path:             path,
+			Uri:              makeUriPath(path),
 			PackageName:      modName,
 			ProjectDirectory: wd,
 		}
+
+		log.Println(api.String())
 
 		if err := api.Create(); err != nil {
 			CheckError(err)
