@@ -16,7 +16,7 @@ const {{ .Name }}Api = "{{ .Name }}Api"
 
 var {{ .Name }}ApiHandler = apibuildr.ApiHandler{
 	Name:   {{ .Name }}Api,
-	Path:   "/{{ .Uri }}",
+	Path:   "{{ .Uri }}",
 	Method: http.MethodPut,
 	HandleFunc: func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()

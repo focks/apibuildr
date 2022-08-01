@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 
 	"strings"
@@ -46,7 +44,7 @@ var addApiCmd = &cobra.Command{
 			ProjectDirectory: wd,
 		}
 
-		log.Println(api.String())
+		// log.Println(api.String())
 
 		if err := api.Create(); err != nil {
 			CheckError(err)

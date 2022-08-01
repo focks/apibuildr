@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"text/template"
 
 	"os"
@@ -49,12 +50,14 @@ func (a *Api) Create() error {
 	}
 
 	switch strings.ToUpper(a.Method) {
-	case "GET":
+	case http.MethodGet:
 		return a.createGetApi()
-	case "POST":
+	case http.MethodPost:
 		return a.createPostApi()
-	case "PUT":
+	case http.MethodPut:
 		return a.createPutApi()
+	case http.MethodDelete:
+		return a.createDeleteApi()
 
 	default:
 		return nil
@@ -95,7 +98,9 @@ func (a *Api) createGetApi() error {
 		return err
 	}
 
-	a.makeFiles(&files)
+	if err := a.makeFiles(&files); err != nil {
+		a.reverseFiles(&files)
+	}
 
 	return nil
 }
@@ -124,7 +129,9 @@ func (a *Api) createPostApi() error {
 		return err
 	}
 
-	a.makeFiles(&files)
+	if err := a.makeFiles(&files); err != nil {
+		a.reverseFiles(&files)
+	}
 
 	return nil
 }
@@ -153,7 +160,36 @@ func (a *Api) createPutApi() error {
 		return err
 	}
 
-	a.makeFiles(&files)
+	if err := a.makeFiles(&files); err != nil {
+		a.reverseFiles(&files)
+	}
+
+	return nil
+}
+
+func (a *Api) createDeleteApi() error {
+	files := []*ApiFile{
+		{
+			path:     fmt.Sprintf("%s/cmd/%sHandler.go", a.ProjectDirectory, a.Name),
+			template: tpl.DeleteApiHandlerTemplate,
+		},
+		{
+			path:     fmt.Sprintf("%s/cmd/%sHandler_test.go", a.ProjectDirectory, a.Name),
+			template: tpl.DeleteApiHandlerTestTemplate,
+		},
+		{
+			path:     fmt.Sprintf("%s/internal/%sCtrl.go", a.ProjectDirectory, a.Name),
+			template: tpl.DeleteApiCtrlTemplate,
+		},
+	}
+
+	if err := a.realizeApiDirectories(); err != nil {
+		return err
+	}
+
+	if err := a.makeFiles(&files); err != nil {
+		a.reverseFiles(&files)
+	}
 
 	return nil
 }
@@ -178,23 +214,38 @@ func (a *Api) realizeApiDirectories() error {
 	return nil
 }
 
-func (a *Api) makeFiles(files *[]*ApiFile) {
+func (a *Api) reverseFiles(files *[]*ApiFile) {
+	for _, f := range *files {
+		if f.created == true {
+			if err := os.Remove(f.path); err != nil {
+				CheckError(err)
+			}
+		}
+	}
+
+}
+
+func (a *Api) makeFiles(files *[]*ApiFile) error {
 	for i, f := range *files {
 		file, err := os.Create(f.path)
 		if err != nil {
 			f.created = false
 			f.err = err
+			return err
 		}
+		f.created = true
 
 		tpl := template.Must(template.New(fmt.Sprintf("tpl-%v", i)).Parse(string(f.template)))
 		if err = tpl.Execute(file, a); err != nil {
-			f.created = true
 			f.err = err
+			return err
 		}
 
 		file.Close()
 
 	}
+
+	return nil
 }
 
 func (a *Api) String() string {
