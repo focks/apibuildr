@@ -5,9 +5,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"path"
+
+	"github.com/spf13/cobra"
 )
 
 // initCmd represents the init command
@@ -44,13 +45,13 @@ func initializeProject(args []string) error {
 
 	modName := getModImportPath()
 
-	project := &Project{
+	service := &Microservice{
 		AbsolutePath: wd,
 		PackageName:  modName,
 		Name:         path.Base(modName),
 	}
 
-	if err := project.Create(); err != nil {
+	if err := service.Create(); err != nil {
 		return err
 	}
 

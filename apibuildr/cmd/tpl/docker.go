@@ -3,7 +3,7 @@ package tpl
 func DockerTemplate() []byte {
 	return []byte(`
 # Build the manager binary
-FROM golang:1.17.2 as builder
+FROM golang:1.18.3 as builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests

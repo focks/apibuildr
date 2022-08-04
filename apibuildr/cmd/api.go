@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"net/http"
-	"text/template"
 
 	"os"
 	"strings"
@@ -99,7 +98,7 @@ func (a *Api) createGetApi() error {
 	}
 
 	if err := a.makeFiles(&files); err != nil {
-		a.reverseFiles(&files)
+		reverseFiles(&files)
 	}
 
 	return nil
@@ -130,7 +129,7 @@ func (a *Api) createPostApi() error {
 	}
 
 	if err := a.makeFiles(&files); err != nil {
-		a.reverseFiles(&files)
+		reverseFiles(&files)
 	}
 
 	return nil
@@ -161,7 +160,7 @@ func (a *Api) createPutApi() error {
 	}
 
 	if err := a.makeFiles(&files); err != nil {
-		a.reverseFiles(&files)
+		reverseFiles(&files)
 	}
 
 	return nil
@@ -188,7 +187,7 @@ func (a *Api) createDeleteApi() error {
 	}
 
 	if err := a.makeFiles(&files); err != nil {
-		a.reverseFiles(&files)
+		reverseFiles(&files)
 	}
 
 	return nil
@@ -214,38 +213,8 @@ func (a *Api) realizeApiDirectories() error {
 	return nil
 }
 
-func (a *Api) reverseFiles(files *[]*ApiFile) {
-	for _, f := range *files {
-		if f.created == true {
-			if err := os.Remove(f.path); err != nil {
-				CheckError(err)
-			}
-		}
-	}
-
-}
-
 func (a *Api) makeFiles(files *[]*ApiFile) error {
-	for i, f := range *files {
-		file, err := os.Create(f.path)
-		if err != nil {
-			f.created = false
-			f.err = err
-			return err
-		}
-		f.created = true
-
-		tpl := template.Must(template.New(fmt.Sprintf("tpl-%v", i)).Parse(string(f.template)))
-		if err = tpl.Execute(file, a); err != nil {
-			f.err = err
-			return err
-		}
-
-		file.Close()
-
-	}
-
-	return nil
+	return makeFiles(files, a)
 }
 
 func (a *Api) String() string {
