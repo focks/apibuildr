@@ -5,6 +5,8 @@ import "fmt"
 type ApiError struct {
 	Message    string            `json:"message"`
 	ApiCode    string            `json:"api_code"`
+	ApiName    string            `json:"api_name"`
+	RequestId  string            `json:"request_id"`
 	Cause      error             `json:"-"`
 	StatusCode int               `json:"status_code"`
 	Errors     map[string]string `json:"errors"`
@@ -23,6 +25,16 @@ func (e *ApiError) Unwrap() error {
 
 func NewApiError(status int) *ApiError {
 	return &ApiError{StatusCode: status}
+}
+
+func (e *ApiError) WithRequestId(rid string) *ApiError {
+	e.RequestId = rid
+	return e
+}
+
+func (e *ApiError) WithApiName(api string) *ApiError {
+	e.ApiName = api
+	return e
 }
 
 func (e *ApiError) WithMessage(msg string) *ApiError {

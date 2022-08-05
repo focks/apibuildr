@@ -2,6 +2,7 @@ package apibuildr
 
 import (
 	"context"
+
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 )
@@ -20,6 +21,8 @@ const (
 	RequestID
 
 	UserID
+
+	Host
 )
 
 func GetApiName(ctx context.Context) string {
@@ -71,6 +74,14 @@ func GetUserID(ctx context.Context) string {
 		return ""
 	}
 	return userId
+}
+
+func GetHost(ctx context.Context) string {
+	host, ok := ctx.Value(Host).(string)
+	if !ok {
+		return ""
+	}
+	return host
 }
 
 func Contextual(ctx context.Context, errs ...error) []zap.Field {
