@@ -3,15 +3,52 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"github.com/spf13/cobra"
 )
+
+func makeFiles(files *[]*ApiFile, v interface{}) error {
+	for i, f := range *files {
+		file, err := os.Create(f.path)
+		if err != nil {
+			f.created = false
+			f.err = err
+			log.Println(err)
+			return err
+		}
+		f.created = true
+		log.Println("created file", f.path)
+
+		tpl := template.Must(template.New(fmt.Sprintf("tpl-%v", i)).Parse(string(f.template)))
+		if err = tpl.Execute(file, v); err != nil {
+			f.err = err
+			return err
+		}
+
+		file.Close()
+
+	}
+
+	return nil
+}
+
+func reverseFiles(files *[]*ApiFile) {
+	for _, f := range *files {
+		if f.created == true {
+			if err := os.Remove(f.path); err != nil {
+				CheckError(err)
+			}
+		}
+	}
+}
 
 func CheckError(msg interface{}) {
 	if msg != nil {

@@ -10,23 +10,32 @@ It is not a framework, it uses gorilla mux server internally.
 ### Installing apibuildr
 
 ```
-go get github.com/focks/apibuildr
+go install github.com/focks/apibuildr/apibuildr@latest
 ```
 
-### Initializing a project
+### Starting A Project
+
+Apibuildr creates a project directory suitable for a monorepo. The created repo/project would be suitable for housing multiple microservices in it.
 
 ```
-apibuildr init .
+apibuildr startProject <project-name> --package example.com/api
 ```
+
+### Adding Your First Microservice 
+
 It will create a rest api server with no endpoints. 
 
-**NOTE** this repository is under development. please feel free to fork and raise pull requests.
+```
+apibuildr addApp <microservice-name>
+```
 
 
 ### Adding the first Api
 
+Get into the desired microservice where you want the api to be added.
+
 ```shell
-apibuildr addApi apiName -p /v1/hello -m POST 
+apibuildr addApi <api-name> -p /v1/hello -m POST 
 ```
 
 -p or `--path` represents the api path  <br/>
@@ -35,3 +44,5 @@ apibuildr addApi apiName -p /v1/hello -m POST
 
 ### Contributing 
 please feel free to fork this project and raise PRs. Please include feature requests into `todos.txt` file.
+
+**NOTE** this repository is under development. please feel free to fork and raise pull requests.
