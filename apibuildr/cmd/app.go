@@ -54,6 +54,14 @@ func (app *App) Create() error {
 			path:     fmt.Sprintf("%s/cmd/init.go", app.AppDirectory),
 			template: initFileTemplate,
 		},
+		{
+			path:     fmt.Sprintf("%s/Dockerfile", app.AppDirectory),
+			template: tpl.DockerfileTemplate,
+		},
+		{
+			path:     fmt.Sprintf("%s/makefile", app.AppDirectory),
+			template: tpl.MakefileTemplate,
+		},
 	}
 
 	if err := makeFiles(&files, app); err != nil {
