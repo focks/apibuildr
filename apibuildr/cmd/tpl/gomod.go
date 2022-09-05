@@ -8,7 +8,7 @@ require github.com/stretchr/testify v1.8.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/focks/apibuildr v0.0.2 // indirect
+	github.com/focks/apibuildr v0.0.3 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
